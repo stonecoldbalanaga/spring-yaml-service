@@ -1,0 +1,11 @@
+AppValues:
+  app.name: YamlMicroservice
+  app.version: 1.0.0
+  app.environment: development
+  db.host: localhost
+  db.port: "5432"
+  db.name: mydb
+  feature.flag.darkMode: "true"
+  feature.flag.betaApi: "false"
+  external.api.url: https://api.example.com
+  external.api.timeout: "30"

@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  yaml-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: yaml-service:latest
+    container_name: yaml-service
+    ports:
+      - "8080:8080"
+    environment:
+      # Override JWT secret in production — never commit real secrets
+      JWT_SECRET: ${JWT_SECRET:-MySuperSecretKeyForJwtSigningThatIsAtLeast32Chars!}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-3600000}
+      # Mount a custom YAML file via the volume below and set this path
+      APP_YAML_FILE_PATH: ${APP_YAML_FILE_PATH:-appvalues.yaml}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
+    volumes:
+      # Optional: mount a custom YAML file from the host
+      # - ./custom-appvalues.yaml:/app/appvalues.yaml:ro
+      - yaml-config:/app/config
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  yaml-config:
